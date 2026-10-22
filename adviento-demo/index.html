@@ -212,6 +212,7 @@ header { text-align: center; margin-bottom: 16px; }
   // ----- Fecha de hoy en España (o simulada con ?hoy=7 para probar) -----
   function hoyEnZona() {
     if (params.has('hoy')) return { anio: ANIO, mes: 12, dia: +params.get('hoy') };
+    if (C.hoy && C.hoy.anio) return C.hoy; // fecha que da el servidor (cuadra con las puertas que entrega)
     const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: ZONA, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map(x => [x.type, x.value]));
     return { anio: +p.year, mes: +p.month, dia: +p.day };
   }

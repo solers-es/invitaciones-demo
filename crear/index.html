@@ -10,6 +10,8 @@
 /* Dónde está el visor del calendario (para la vista previa) y el precio que se muestra */
 const VISOR_URL = "../adviento-demo/";
 const PRECIO = "14,90 €";
+/* Dirección del servidor de Puertitas. Vacía = el pago aparece desactivado («muy pronto»). */
+const API_URL = "";
 </script>
 <link rel="preload" href="../fuentes/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fuentes/pinyon-script.woff2" as="font" type="font/woff2" crossorigin>
@@ -104,6 +106,24 @@ h1 { font-weight: 600; font-size: clamp(28px, 7.5vw, 34px); line-height: 1.15; t
 .pagar { display: block; width: 100%; min-height: 60px; margin-top: 16px; border-radius: 16px; border: 0; background: var(--rojo); color: #fff; font-weight: 600; font-size: 22px; cursor: pointer; box-shadow: 0 8px 18px rgba(168, 50, 58, .3); }
 .pagar:disabled { background: #b9a9a4; box-shadow: none; cursor: default; }
 .nota { margin-top: 10px; text-align: center; font-size: 16px; font-style: italic; color: var(--suave); }
+.fallo { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #fbe9e9; color: #8a2027; font-size: 17px; text-align: center; }
+.enviado { text-align: center; }
+.enlace-caja { display: flex; gap: 8px; margin-top: 16px; }
+.enlace-caja input { flex: 1; min-width: 0; min-height: 52px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid rgba(27, 58, 42, .25); background: #fff; font-size: 17px; }
+.enlace-caja button { min-height: 52px; padding: 0 16px; border-radius: 12px; border: 0; background: var(--verde); color: #fff; font-weight: 600; font-size: 17px; cursor: pointer; }
+.boton-wa { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 60px; margin-top: 12px; border-radius: 16px; background: #1f8f4e; color: #fff; text-decoration: none; font-weight: 600; font-size: 21px; box-shadow: 0 8px 18px rgba(31, 143, 78, .3); }
+.boton-wa svg { width: 24px; height: 24px; }
+.cambios { margin-top: 22px; padding: 16px; border-radius: 18px; background: var(--papel); box-shadow: 0 6px 16px rgba(40, 40, 30, .08); }
+.quedan { font-size: 18px; line-height: 1.4; }
+.guardar-cambios { display: block; width: 100%; min-height: 54px; margin-top: 12px; border-radius: 14px; border: 0; background: var(--rojo); color: #fff; font-weight: 600; font-size: 19px; cursor: pointer; }
+.guardar-cambios:disabled { background: #c9bdb9; cursor: default; }
+.hacer-cambios { display: block; width: 100%; min-height: 50px; margin-top: 8px; border-radius: 14px; border: 1.5px solid rgba(27, 58, 42, .3); background: #fff; font-weight: 600; font-size: 18px; cursor: pointer; }
+.otro-movil { margin-top: 18px; text-align: left; font-size: 17px; }
+.otro-movil summary { cursor: pointer; font-weight: 600; color: var(--suave); padding: 8px 0; }
+.otro-movil p { color: var(--suave); line-height: 1.4; }
+.pagado .precio { display: none; }
+.pagado .sin-enviar { display: none; }
+.pagado .ver-previa { margin-top: 14px; }
 
 /* Barra inferior */
 .barra-inf { position: fixed; left: 0; right: 0; bottom: 0; z-index: 12; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: rgba(247, 241, 230, .96); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-top: 1px solid rgba(196, 155, 85, .3); }
@@ -177,8 +197,25 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
 
   <!-- 5. Enviar -->
   <section class="paso" data-paso="5" hidden>
+    <div class="enviado" hidden>
+      <h1>¡Ya está! Envíaselo</h1>
+      <p class="sub">Este es su enlace. Cada día de diciembre se abrirá una puertita.</p>
+      <div class="enlace-caja"><input class="enlace" type="text" readonly aria-label="Enlace del calendario"><button type="button" class="copiar">Copiar</button></div>
+      <a class="boton-wa" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20l1.2-4.2A8.5 8.5 0 1 1 20.5 11.5z"/></svg>
+        Enviar por WhatsApp
+      </a>
+      <div class="cambios">
+        <p class="quedan"></p>
+        <button type="button" class="guardar-cambios">Guardar cambios</button>
+        <button type="button" class="hacer-cambios">Cambiar fotos o mensajes</button>
+      </div>
+      <details class="otro-movil"><summary>¿Quieres cambiarlo desde otro móvil?</summary><p>Guarda este enlace: abre tu calendario para editarlo. No se lo pases a quien lo recibe.</p><div class="enlace-caja"><input class="enlace-editar" type="text" readonly aria-label="Enlace para editar"><button type="button" class="copiar-editar">Copiar</button></div></details>
+    </div>
+    <div class="sin-enviar">
     <h1>¡Listo! Míralo antes de enviarlo</h1>
     <p class="sub">Ábrelo como lo verá: puedes abrir todas las puertitas.</p>
+    </div>
     <button class="ver-previa" type="button">Ver cómo queda</button>
     <div class="precio">
       <p class="cifra"></p>
@@ -190,6 +227,7 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
       </ul>
       <button class="pagar" type="button" disabled>Pagar y recibir el enlace</button>
       <p class="nota">Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.</p>
+      <p class="fallo" role="alert" hidden></p>
     </div>
   </section>
 </main>
@@ -213,6 +251,13 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
   'use strict';
   const d = document, $ = s => d.querySelector(s), $$ = s => [...d.querySelectorAll(s)];
   const IDEAS = window.IDEAS;
+  const params = new URLSearchParams(location.search);
+  // En pruebas locales se puede indicar otro servidor con ?api= (nunca en la web publicada)
+  let API = API_URL;
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    try { if (params.get('api')) sessionStorage.setItem('api', params.get('api')); API = sessionStorage.getItem('api') || API; } catch (e) {}
+  }
+  API = API.replace(/\/+$/, '');
 
   // ----- Guardado en el móvil (IndexedDB): el borrador y las fotos -----
   const bd = new Promise((ok, mal) => {
@@ -226,10 +271,13 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
   const leerFoto = id => op('fotos', 'readonly', s => s.get(id));
   const borrarFoto = id => op('fotos', 'readwrite', s => s.delete(id));
   let temporizador;
-  const guardar = () => { clearTimeout(temporizador); temporizador = setTimeout(() => op('borrador', 'readwrite', s => s.put(JSON.parse(JSON.stringify(E)), 'actual')).catch(() => {}), 300); };
+  const escribirBorrador = () => op('borrador', 'readwrite', s => s.put(JSON.parse(JSON.stringify(E)), 'actual'));
+  const guardar = () => { clearTimeout(temporizador); temporizador = setTimeout(() => escribirBorrador().catch(() => {}), 300); };
+  // Sin esperar: antes de salir hacia el pago (si no, la llave del servidor se perdería al cambiar de página)
+  const guardarYa = async () => { clearTimeout(temporizador); await escribirBorrador(); };
 
   // ----- Estado -----
-  let E = { tipo: null, para: '', de: '', dias: [], paso: 1 };
+  let E = { tipo: null, para: '', de: '', dias: [], paso: 1, servidor: null };
   const urls = new Map();
   const urlFoto = async id => { if (!id) return null; if (!urls.has(id)) { const b = await leerFoto(id); if (!b) return null; urls.set(id, URL.createObjectURL(b)); } return urls.get(id); };
   const rellenarDias = tipo => {
@@ -252,7 +300,7 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
   async function anadirFotos(files, empezarEn = null) {
     const lista = [...files].filter(f => f.type.startsWith('image/'));
     if (!lista.length) return;
-    $('.trabajando').hidden = false;
+    ocupado('Preparando tus fotos…');
     let destino = Number.isInteger(empezarEn) && E.dias[empezarEn] ? empezarEn : null;
     try {
       for (let i = 0; i < lista.length; i++) {
@@ -283,7 +331,7 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
     $('.acciones-foto').hidden = true; seleccion = null;
     if (n === 3) pintarCasillas();
     if (n === 4) { pintarChips(); pintarDia(); }
-    if (n === 5) $('.precio .cifra').textContent = PRECIO;
+    if (n === 5) { $('.precio .cifra').textContent = PRECIO; pintarEnvio(); }
     validar(); scrollTo({ top: 0 });
   }
   function validar() {
@@ -401,12 +449,133 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
   });
   $('.cerrar-previa').addEventListener('click', () => { marco?.remove(); marco = null; previa.hidden = true; d.body.style.overflow = ''; });
 
+  // ----- Servidor: subir, pagar, publicar cambios -----
+  const conServidor = () => !!API;
+  async function api(metodo, ruta, cuerpo, tipo) {
+    const r = await fetch(API + ruta, { method: metodo, body: cuerpo, headers: { ...(E.servidor?.token ? { authorization: 'Bearer ' + E.servidor.token } : {}), ...(tipo ? { 'content-type': tipo } : {}) } });
+    const datos = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(datos.error || 'No hemos podido conectar. Revisa tu conexión y vuelve a intentarlo.'); e.estado = r.status; throw e; }
+    return datos;
+  }
+  const huella = () => JSON.stringify([E.tipo, E.para.trim(), E.de.trim(), E.dias.map(x => [x.mensaje, x.vale || '', x.foto || ''])]);
+  const ocupado = (texto, detalle = '') => { $('.trabajando p').textContent = texto; $('.progreso').textContent = detalle; $('.trabajando').hidden = false; };
+  const libre = () => { $('.trabajando').hidden = true; };
+  const avisarFallo = t => { const f = $('.fallo'); f.textContent = t; f.hidden = !t; };
+
+  // Sube textos y solo las fotos que han cambiado
+  async function sincronizar() {
+    if (!E.servidor) { const c = await api('POST', '/api/calendarios'); E.servidor = { id: c.id, token: c.token, subidas: {}, estado: 'borrador', intentos: 0 }; await guardarYa(); }
+    const s = E.servidor;
+    await api('PUT', `/api/calendarios/${s.id}`, JSON.stringify({ tipo: E.tipo, para: E.para.trim(), de: E.de.trim(), anio: 2026, dias: E.dias.map(x => ({ dia: x.dia, mensaje: x.mensaje, vale: x.vale || '' })) }), 'application/json');
+    const pendientes = E.dias.filter(x => (x.foto || null) !== (s.subidas[x.dia] || null));
+    for (let k = 0; k < pendientes.length; k++) {
+      const x = pendientes[k];
+      ocupado('Subiendo vuestras fotos…', `${k + 1} de ${pendientes.length}`);
+      if (x.foto) { const blob = await leerFoto(x.foto); if (blob) await api('PUT', `/api/calendarios/${s.id}/fotos/${x.dia}`, blob, 'image/jpeg'); s.subidas[x.dia] = x.foto; }
+      else { await api('DELETE', `/api/calendarios/${s.id}/fotos/${x.dia}`); delete s.subidas[x.dia]; }
+      guardar();
+    }
+  }
+  function enlaceEditar() { return `${location.origin}${location.pathname}#editar=${E.servidor.id}.${E.servidor.token}`; }
+  function pintarEnvio() {
+    const pagado = E.servidor?.estado === 'pagado';
+    $('[data-paso="5"]').classList.toggle('pagado', pagado);
+    $('.enviado').hidden = !pagado;
+    const pagar = $('.pagar');
+    pagar.disabled = !conServidor();
+    $('.nota').textContent = conServidor() ? 'Pago seguro con tarjeta. Al pagar recibes el enlace al momento.' : 'Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.';
+    if (!pagado) return;
+    const s = E.servidor;
+    $('.enlace').value = s.enlace;
+    $('.boton-wa').href = 'https://wa.me/?text=' + encodeURIComponent(`🎄 ${E.para.trim() ? E.para.trim() + ', t' : 'T'}e he preparado un calendario de Adviento: cada día de diciembre se abre una puertita. Ábrelo aquí: ${s.enlace}`);
+    $('.enlace-editar').value = enlaceEditar();
+    const hayCambios = huella() !== s.huella;
+    $('.quedan').textContent = s.intentos > 0
+      ? (hayCambios ? `Tienes cambios sin publicar. Te quedan ${s.intentos} ${s.intentos === 1 ? 'cambio' : 'cambios'}.` : `¿Quieres cambiar algo? Te quedan ${s.intentos} ${s.intentos === 1 ? 'cambio' : 'cambios'}.`)
+      : 'Ya has usado los tres cambios. El calendario queda como está.';
+    const g = $('.guardar-cambios');
+    g.hidden = s.intentos === 0; g.disabled = !hayCambios;
+    g.textContent = `Guardar cambios (te quedan ${s.intentos})`;
+    $('.hacer-cambios').hidden = s.intentos === 0;
+  }
+  $('.pagar').addEventListener('click', async () => {
+    if (!conServidor()) return;
+    avisarFallo('');
+    try {
+      ocupado('Preparando tu calendario…');
+      await sincronizar();
+      ocupado('Abriendo el pago seguro…');
+      const { url } = await api('POST', `/api/calendarios/${E.servidor.id}/pagar`);
+      await guardarYa();
+      location.href = url;
+    } catch (e) { libre(); avisarFallo(e.message); }
+  });
+  $('.guardar-cambios').addEventListener('click', async () => {
+    avisarFallo('');
+    try {
+      ocupado('Guardando tus cambios…');
+      await sincronizar();
+      const r = await api('POST', `/api/calendarios/${E.servidor.id}/publicar`);
+      E.servidor.intentos = r.intentos; E.servidor.huella = huella(); guardar();
+      libre(); pintarEnvio();
+    } catch (e) { libre(); $('.quedan').textContent = e.message; }
+  });
+  $('.hacer-cambios').addEventListener('click', () => irA(4));
+  const copiar = async (texto, boton) => { try { await navigator.clipboard.writeText(texto); boton.textContent = '¡Copiado!'; setTimeout(() => boton.textContent = 'Copiar', 1800); } catch (e) {} };
+  $('.copiar').addEventListener('click', e => copiar($('.enlace').value, e.currentTarget));
+  $('.copiar-editar').addEventListener('click', e => copiar($('.enlace-editar').value, e.currentTarget));
+
+  // Vuelta de Stripe: confirma el pago (con reintentos por si el aviso tarda)
+  async function confirmarPago(sesion) {
+    ocupado('Confirmando tu pago…');
+    for (let i = 0; i < 12; i++) {
+      try {
+        const r = await api('GET', `/api/calendarios/${E.servidor.id}/estado?sesion=${encodeURIComponent(sesion)}`);
+        if (r.estado === 'pagado') { Object.assign(E.servidor, { estado: 'pagado', intentos: r.intentos, enlace: r.enlace, huella: huella() }); guardar(); libre(); return true; }
+      } catch (e) {}
+      await new Promise(r => setTimeout(r, 2000));
+    }
+    libre(); return false;
+  }
+  // Seguir editando desde otro móvil: #editar=<id>.<llave>
+  async function restaurar(id, token) {
+    ocupado('Recuperando tu calendario…');
+    E.servidor = { id, token, subidas: {}, estado: 'borrador', intentos: 0 };
+    const r = await api('GET', `/api/calendarios/${id}`);
+    const b = r.borrador || {};
+    E.tipo = IDEAS[b.tipo] ? b.tipo : 'pareja'; E.para = b.para || ''; E.de = b.de || '';
+    E.dias = (b.dias && b.dias.length === 24) ? b.dias.map(x => ({ dia: x.dia, mensaje: x.mensaje, vale: x.vale || '', foto: null })) : IDEAS[E.tipo].dias.map(([mensaje, vale], i) => ({ dia: i + 1, mensaje, vale: vale || '', foto: null }));
+    for (const n of r.fotos || []) {
+      ocupado('Recuperando tus fotos…', `día ${n}`);
+      const resp = await fetch(`${API}/api/calendarios/${id}/fotos/${n}`, { headers: { authorization: 'Bearer ' + token } });
+      if (!resp.ok) continue;
+      const fid = nuevoId(); await guardarFoto(fid, await resp.blob());
+      E.dias[n - 1].foto = fid; E.servidor.subidas[n] = fid;
+    }
+    Object.assign(E.servidor, { estado: r.estado, intentos: r.intentos, enlace: r.enlace });
+    E.servidor.huella = huella();
+    guardar(); libre();
+  }
+
   // ----- Arranque: recupera el borrador si lo hay -----
   (async () => {
     try { const b = await leerBorrador(); if (b && b.tipo) E = Object.assign(E, b); } catch (e) {}
     // Si viene de la página de venta con un tipo elegido (?tipo=pareja) y aún no hay borrador, empieza por ahí
     const pedido = new URLSearchParams(location.search).get('tipo');
     if (!E.tipo && pedido && IDEAS[pedido]) { E.tipo = pedido; rellenarDias(pedido); E.paso = 2; guardar(); }
+    if (conServidor()) {
+      const editar = location.hash.match(/^#editar=([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);
+      try {
+        if (editar && editar[1] !== E.servidor?.id) { await restaurar(editar[1], editar[2]); E.paso = 5; }
+        if (params.get('pagado') && params.get('sesion') && E.servidor && E.servidor.estado !== 'pagado') {
+          const ok = await confirmarPago(params.get('sesion'));
+          E.paso = 5;
+          if (!ok) setTimeout(() => avisarFallo('Aún no nos ha llegado la confirmación del pago. Si ya has pagado, vuelve a abrir esta página en un minuto.'), 0);
+        }
+      } catch (e) { libre(); setTimeout(() => avisarFallo(e.message), 0); }
+      if (params.get('cancelado')) { E.paso = 5; setTimeout(() => avisarFallo('Has cancelado el pago. Tu calendario sigue guardado: puedes pagar cuando quieras.'), 0); }
+      if (editar || params.get('pagado') || params.get('cancelado')) history.replaceState(null, '', location.pathname);
+    }
     if (E.tipo) $$('.tipo').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tipo === E.tipo)));
     $('#para').value = E.para; $('#de').value = E.de; pintarMuestra();
     irA(E.tipo ? (E.paso || 1) : 1);
