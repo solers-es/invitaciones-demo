@@ -106,6 +106,10 @@ h1 { font-weight: 600; font-size: clamp(28px, 7.5vw, 34px); line-height: 1.15; t
 .precio li::before { content: "✓"; color: var(--verde-claro); font-weight: 600; }
 .pagar { display: block; width: 100%; min-height: 60px; margin-top: 16px; border-radius: 16px; border: 0; background: var(--rojo); color: #fff; font-weight: 600; font-size: 22px; cursor: pointer; box-shadow: 0 8px 18px rgba(168, 50, 58, .3); }
 .pagar:disabled { background: #b9a9a4; box-shadow: none; cursor: default; }
+.acepto { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; padding: 10px 12px; border-radius: 12px; border: 2px solid transparent; text-align: left; font-size: 16px; line-height: 1.35; color: var(--suave); cursor: pointer; }
+.acepto input { flex: none; width: 24px; height: 24px; margin-top: 1px; accent-color: var(--verde); }
+.acepto a { color: var(--verde); }
+.acepto.falta { border-color: var(--rojo); background: #fbe9e9; color: #8a2027; }
 .nota { margin-top: 10px; text-align: center; font-size: 16px; font-style: italic; color: var(--suave); }
 .fallo { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #fbe9e9; color: #8a2027; font-size: 17px; text-align: center; }
 .enviado { text-align: center; }
@@ -229,6 +233,7 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
         <li>Después de pagar puedes cambiarlo 3 veces más</li>
         <li>Música, nieve y vales regalo incluidos</li>
       </ul>
+      <label class="acepto" hidden><input id="acepto" type="checkbox"><span>Quiero recibirlo ya. Sé que, al ser digital y entregarse al momento, no se puede devolver. Acepto las <a href="../puertitas/legal/#condiciones" target="_blank" rel="noopener">condiciones</a>.</span></label>
       <button class="pagar" type="button" disabled>Pagar y recibir el enlace</button>
       <p class="nota">Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.</p>
       <p class="fallo" role="alert" hidden></p>
@@ -491,6 +496,7 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
     $('.enviado').hidden = !pagado;
     const pagar = $('.pagar');
     pagar.disabled = !conServidor();
+    $('.acepto').hidden = !conServidor();
     $('.codigo-caja').hidden = !conServidor();
     $('.nota').textContent = conServidor() ? 'Pago seguro con tarjeta. Al pagar recibes el enlace al momento.' : 'Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.';
     if (!pagado) return;
@@ -510,15 +516,17 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
   $('.pagar').addEventListener('click', async () => {
     if (!conServidor()) return;
     avisarFallo('');
+    if (!$('#acepto').checked) { $('.acepto').classList.add('falta'); $('.acepto').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     try {
       ocupado('Preparando tu calendario…');
       await sincronizar();
       ocupado('Abriendo el pago seguro…');
-      const { url } = await api('POST', `/api/calendarios/${E.servidor.id}/pagar`);
+      const { url } = await api('POST', `/api/calendarios/${E.servidor.id}/pagar`, JSON.stringify({ acepta: true }), 'application/json');
       await guardarYa();
       location.href = url;
     } catch (e) { libre(); avisarFallo(e.message); }
   });
+  $('#acepto').addEventListener('change', e => $('.acepto').classList.toggle('falta', !e.target.checked && $('.acepto').classList.contains('falta')));
   // Canjear un código (Etsy, regalo…): queda pagado sin pasar por la tarjeta
   $('.canjear').addEventListener('click', async () => {
     const codigo = $('#codigo').value.trim();
