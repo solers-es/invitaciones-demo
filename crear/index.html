@@ -404,6 +404,9 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
   // ----- Arranque: recupera el borrador si lo hay -----
   (async () => {
     try { const b = await leerBorrador(); if (b && b.tipo) E = Object.assign(E, b); } catch (e) {}
+    // Si viene de la página de venta con un tipo elegido (?tipo=pareja) y aún no hay borrador, empieza por ahí
+    const pedido = new URLSearchParams(location.search).get('tipo');
+    if (!E.tipo && pedido && IDEAS[pedido]) { E.tipo = pedido; rellenarDias(pedido); E.paso = 2; guardar(); }
     if (E.tipo) $$('.tipo').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tipo === E.tipo)));
     $('#para').value = E.para; $('#de').value = E.de; pintarMuestra();
     irA(E.tipo ? (E.paso || 1) : 1);

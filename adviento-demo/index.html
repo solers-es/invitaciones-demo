@@ -6,6 +6,7 @@
 <title>Tu calendario de Adviento</title>
 <meta name="description" content="Un calendario de Adviento con 24 puertitas: cada día de diciembre se abre una con una foto y un mensaje.">
 <meta name="theme-color" content="#16301f">
+<meta name="robots" content="noindex, nofollow">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tienes un calendario de Adviento">
 <meta property="og:description" content="24 puertitas, una cada día de diciembre. Toca para abrir la de hoy.">
@@ -225,13 +226,14 @@ header { text-align: center; margin-bottom: 16px; }
   $('.para').textContent = C.para ? `Para ${C.para}` : 'Tu calendario';
   $('.de').textContent = C.de ? `Un calendario de Adviento de ${C.de}` : '';
   if (C.para) d.title = `Calendario de Adviento para ${C.para}`;
-  if (demo) $('.demo-aviso').hidden = false;
+  const escaparate = params.has('escaparate'); // dentro del móvil de la página de venta: sin avisos ni enlaces
+  if (demo && !escaparate) $('.demo-aviso').hidden = false;
   const cuenta = $('.cuenta-atras');
   if (demo) cuenta.textContent = '24 puertitas, una cada día';
   else if (abiertoHasta === 0) { const f = diasHasta(1); cuenta.textContent = f === 1 ? 'Mañana se abre la primera puertita' : `Faltan ${f} días para la primera puertita`; }
   else if (diaDeHoy) cuenta.textContent = diaDeHoy === 24 ? '¡Hoy se abre la última puertita!' : `Hoy se abre la puertita ${diaDeHoy}`;
   else cuenta.textContent = '¡Feliz Navidad!';
-  if (C.crearUrl) { const a = $('.crea'); a.href = C.crearUrl; a.hidden = false; }
+  if (C.crearUrl && !escaparate) { const a = $('.crea'); a.href = C.crearUrl; a.hidden = false; }
 
   // ----- Puertitas -----
   const ORDEN = [7, 18, 3, 12, 21, 1, 15, 9, 23, 5, 14, 20, 2, 11, 17, 6, 22, 10, 4, 19, 13, 8, 16, 24];
