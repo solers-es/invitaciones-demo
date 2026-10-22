@@ -119,6 +119,9 @@ h1 { font-weight: 600; font-size: clamp(28px, 7.5vw, 34px); line-height: 1.15; t
 .guardar-cambios { display: block; width: 100%; min-height: 54px; margin-top: 12px; border-radius: 14px; border: 0; background: var(--rojo); color: #fff; font-weight: 600; font-size: 19px; cursor: pointer; }
 .guardar-cambios:disabled { background: #c9bdb9; cursor: default; }
 .hacer-cambios { display: block; width: 100%; min-height: 50px; margin-top: 8px; border-radius: 14px; border: 1.5px solid rgba(27, 58, 42, .3); background: #fff; font-weight: 600; font-size: 18px; cursor: pointer; }
+.codigo-caja { margin-top: 14px; text-align: left; font-size: 17px; }
+.codigo-caja summary { cursor: pointer; font-weight: 600; color: var(--suave); padding: 8px 0; text-align: center; }
+.codigo-caja input { text-transform: uppercase; letter-spacing: .06em; }
 .otro-movil { margin-top: 18px; text-align: left; font-size: 17px; }
 .otro-movil summary { cursor: pointer; font-weight: 600; color: var(--suave); padding: 8px 0; }
 .otro-movil p { color: var(--suave); line-height: 1.4; }
@@ -229,6 +232,10 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
       <button class="pagar" type="button" disabled>Pagar y recibir el enlace</button>
       <p class="nota">Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.</p>
       <p class="fallo" role="alert" hidden></p>
+      <details class="codigo-caja" hidden>
+        <summary>¿Tienes un código? (por ejemplo, de Etsy)</summary>
+        <div class="enlace-caja"><input id="codigo" type="text" placeholder="PUERTA-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código"><button type="button" class="canjear">Canjear</button></div>
+      </details>
     </div>
   </section>
 </main>
@@ -484,6 +491,7 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
     $('.enviado').hidden = !pagado;
     const pagar = $('.pagar');
     pagar.disabled = !conServidor();
+    $('.codigo-caja').hidden = !conServidor();
     $('.nota').textContent = conServidor() ? 'Pago seguro con tarjeta. Al pagar recibes el enlace al momento.' : 'Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.';
     if (!pagado) return;
     const s = E.servidor;
@@ -509,6 +517,20 @@ button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outli
       const { url } = await api('POST', `/api/calendarios/${E.servidor.id}/pagar`);
       await guardarYa();
       location.href = url;
+    } catch (e) { libre(); avisarFallo(e.message); }
+  });
+  // Canjear un código (Etsy, regalo…): queda pagado sin pasar por la tarjeta
+  $('.canjear').addEventListener('click', async () => {
+    const codigo = $('#codigo').value.trim();
+    if (!codigo) { $('#codigo').focus(); return; }
+    avisarFallo('');
+    try {
+      ocupado('Preparando tu calendario…');
+      await sincronizar();
+      ocupado('Comprobando el código…');
+      const r = await api('POST', `/api/calendarios/${E.servidor.id}/canjear`, JSON.stringify({ codigo }), 'application/json');
+      Object.assign(E.servidor, { estado: 'pagado', intentos: r.intentos, enlace: r.enlace, huella: huella() });
+      await guardarYa(); libre(); pintarEnvio(); scrollTo({ top: 0 });
     } catch (e) { libre(); avisarFallo(e.message); }
   });
   $('.guardar-cambios').addEventListener('click', async () => {
