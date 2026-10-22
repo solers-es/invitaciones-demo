@@ -5,7 +5,7 @@
   "de": "Marcos",
   "anio": 2026,
   "zona": "Europe/Madrid",
-  "crearUrl": "../",
+  "crearUrl": "../crear/",
   "dias": [
     { "dia": 1, "mensaje": "El primer día de diciembre empieza contigo. Como todo lo bueno." },
     { "dia": 2, "mensaje": "¿Te acuerdas de este día? Yo lo tengo guardado aquí dentro." },

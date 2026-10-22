@@ -192,11 +192,19 @@ header { text-align: center; margin-bottom: 16px; }
   const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const pausa = ms => new Promise(r => setTimeout(r, ms));
 
-  // Los datos vienen de la propia página (window.CALENDARIO) o de datos.json al lado
+  // Los datos vienen de la propia página (window.CALENDARIO), del editor (vista previa) o de datos.json al lado
+  const vista = params.has('vista');
   let C = window.CALENDARIO;
+  if (!C && vista) {
+    C = await new Promise(r => {
+      addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.tipo === 'calendario') r(e.data.datos); });
+      parent.postMessage({ tipo: 'listo' }, location.origin);
+    });
+  }
   if (!C) { try { C = await (await fetch('datos.json', { cache: 'no-store' })).json(); } catch (e) { $('.cargador').textContent = 'No se ha podido cargar el calendario.'; return; } }
 
-  const demo = (!!C.demo || params.has('demo')) && !params.has('nodemo');
+  const demo = (!!C.demo || vista || params.has('demo')) && !params.has('nodemo');
+  if (vista) $('.demo-aviso').textContent = `Vista previa: así lo verá ${C.para || 'quien lo reciba'}. Aquí puedes abrir todas las puertitas; en el de verdad, cada una se abre en su día.`;
   const ZONA = C.zona || 'Europe/Madrid', ANIO = C.anio || 2026;
   const CLAVE = 'adviento-' + (C.id || 'demo');
 

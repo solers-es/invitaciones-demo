@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crea tu calendario de Adviento</title>
+<meta name="description" content="Crea en cinco minutos un calendario de Adviento con vuestras fotos: 24 puertitas, una cada día de diciembre.">
+<meta name="theme-color" content="#f7f1e6">
+<script>
+/* Dónde está el visor del calendario (para la vista previa) y el precio que se muestra */
+const VISOR_URL = "../adviento-demo/";
+const PRECIO = "14,90 €";
+</script>
+<link rel="preload" href="../fuentes/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fuentes/pinyon-script.woff2" as="font" type="font/woff2" crossorigin>
+<script src="ideas.js"></script>
+<style>
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500 600; font-display: swap; src: url("../fuentes/cormorant-garamond.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; font-display: swap; src: url("../fuentes/cormorant-garamond-italica.woff2") format("woff2"); }
+@font-face { font-family: "Pinyon Script"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fuentes/pinyon-script.woff2") format("woff2"); }
+:root {
+  --verde: #1b3a2a; --verde-claro: #2f5d4a; --rojo: #a8323a; --oro: #c49b55; --oro-claro: #e9d3a2; --crema: #f7f1e6; --papel: #fffdf8; --tinta: #23251f; --suave: #5f6358;
+  --serif: "Cormorant Garamond", Georgia, serif; --caligrafia: "Pinyon Script", "Snell Roundhand", Georgia, serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { min-height: 100vh; font-family: var(--serif); color: var(--tinta); background: var(--crema); -webkit-tap-highlight-color: transparent; }
+button, input, textarea { font: inherit; color: inherit; }
+
+.barra-sup { position: sticky; top: 0; z-index: 10; background: rgba(247, 241, 230, .94); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(196, 155, 85, .3); padding: calc(10px + env(safe-area-inset-top)) 16px 10px; }
+.marca { text-align: center; font-family: var(--caligrafia); font-size: 30px; line-height: 1; color: var(--verde); }
+.pasos { display: flex; justify-content: center; gap: 6px; margin-top: 8px; list-style: none; padding: 0; }
+.pasos li { width: 34px; height: 5px; border-radius: 3px; background: rgba(27, 58, 42, .15); }
+.pasos li.hecho { background: var(--oro); }
+.pasos li.actual { background: var(--verde); }
+
+main { max-width: 560px; margin: 0 auto; padding: 22px 16px calc(120px + env(safe-area-inset-bottom)); }
+h1 { font-weight: 600; font-size: clamp(28px, 7.5vw, 34px); line-height: 1.15; text-align: center; }
+.sub { margin-top: 6px; text-align: center; font-size: 19px; line-height: 1.4; font-style: italic; color: var(--suave); }
+
+/* Paso 1: para quién */
+.tipos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+.tipo { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 10px 16px; border-radius: 18px; border: 2px solid transparent; background: var(--papel); box-shadow: 0 6px 16px rgba(40, 40, 30, .08); cursor: pointer; text-align: center; }
+.tipo .emo { font-size: 38px; line-height: 1.1; }
+.tipo .nom { font-weight: 600; font-size: 21px; }
+.tipo .pis { font-size: 15px; line-height: 1.3; font-style: italic; color: var(--suave); }
+.tipo[aria-pressed="true"] { border-color: var(--verde); background: #fff; box-shadow: 0 8px 20px rgba(27, 58, 42, .18); }
+
+/* Paso 2: nombres */
+.campo { display: block; margin-top: 18px; }
+.campo span { display: block; font-weight: 600; font-size: 19px; margin-bottom: 6px; }
+.campo input, .campo textarea { width: 100%; min-height: 54px; padding: 12px 14px; border-radius: 14px; border: 1.5px solid rgba(27, 58, 42, .25); background: var(--papel); font-size: 20px; }
+.campo textarea { min-height: 96px; resize: vertical; line-height: 1.35; }
+.campo input:focus, .campo textarea:focus { outline: 3px solid rgba(196, 155, 85, .55); border-color: var(--verde); }
+.muestra { margin-top: 22px; padding: 22px 16px; border-radius: 18px; text-align: center; color: #f6e7c4; background: radial-gradient(120% 90% at 50% 0%, #2a5a3f, #17321f); box-shadow: inset 0 0 0 1px rgba(210, 174, 106, .5); }
+.muestra .p { font-family: var(--caligrafia); font-size: 42px; line-height: 1.1; padding: 0 .1em; }
+.muestra .d { font-style: italic; font-size: 17px; color: #e8dcc0; margin-top: 2px; }
+
+/* Paso 3: fotos */
+.elegir { display: flex; width: 100%; align-items: center; justify-content: center; gap: 10px; min-height: 60px; margin-top: 20px; border-radius: 16px; border: 0; background: var(--verde); color: #fbf5e9; font-weight: 600; font-size: 21px; cursor: pointer; box-shadow: 0 8px 18px rgba(27, 58, 42, .25); }
+.elegir svg { width: 24px; height: 24px; }
+.cuenta-fotos { margin-top: 10px; text-align: center; font-size: 17px; color: var(--suave); }
+.casillas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+.casilla { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 2px dashed rgba(27, 58, 42, .25); background: var(--papel); cursor: pointer; padding: 0; }
+.casilla img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.casilla .n { position: absolute; left: 5px; top: 5px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: rgba(27, 58, 42, .85); color: #fff; font-weight: 600; font-size: 15px; line-height: 24px; text-align: center; }
+.casilla .mas { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; color: rgba(27, 58, 42, .35); }
+.casilla.llena { border-style: solid; border-color: transparent; }
+.casilla.elegida { border: 3px solid var(--rojo); }
+.acciones-foto { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom)); z-index: 15; width: min(528px, calc(100% - 24px)); padding: 12px; border-radius: 16px; background: var(--verde); color: #fbf5e9; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+.acciones-foto p { font-size: 17px; }
+.acciones-foto .fila { display: flex; gap: 8px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+.acciones-foto button { min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .5); background: transparent; color: #fff; font-weight: 600; font-size: 17px; cursor: pointer; }
+
+/* Paso 4: mensajes */
+.dias { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 10px; margin: 16px -16px 0; padding-left: 16px; padding-right: 16px; scroll-snap-type: x mandatory; }
+.dia-chip { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid rgba(27, 58, 42, .25); background: var(--papel); font-weight: 600; font-size: 18px; cursor: pointer; scroll-snap-align: center; position: relative; }
+.dia-chip.con-vale::after { content: ""; position: absolute; right: 2px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: var(--rojo); }
+.dia-chip[aria-pressed="true"] { background: var(--verde); color: #fff; border-color: var(--verde); }
+.tarjeta-dia { margin-top: 6px; padding: 16px; border-radius: 18px; background: var(--papel); box-shadow: 0 6px 16px rgba(40, 40, 30, .08); }
+.tarjeta-dia .cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tarjeta-dia .cab h2 { font-weight: 600; font-size: 22px; }
+.nav-dia { display: flex; gap: 6px; }
+.nav-dia button { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(27, 58, 42, .25); background: #fff; font-size: 22px; cursor: pointer; }
+.foto-dia { position: relative; margin-top: 12px; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: linear-gradient(150deg, #e9e2d3, #d8ccb4); display: grid; place-items: center; }
+.foto-dia img { width: 100%; height: 100%; object-fit: cover; }
+.foto-dia .vacia { font-size: 17px; font-style: italic; color: var(--suave); text-align: center; padding: 10px; }
+.foto-dia button { position: absolute; right: 8px; bottom: 8px; min-height: 40px; padding: 6px 14px; border-radius: 999px; border: 0; background: rgba(27, 58, 42, .88); color: #fff; font-weight: 600; font-size: 16px; cursor: pointer; }
+.otra { margin-top: 8px; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1.5px solid rgba(27, 58, 42, .3); background: #fff; font-weight: 600; font-size: 17px; cursor: pointer; }
+.vale-caja { margin-top: 14px; padding: 12px; border-radius: 14px; border: 2px dashed rgba(196, 155, 85, .8); background: #fbf2df; }
+.interruptor { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 19px; cursor: pointer; }
+.interruptor input { width: 22px; height: 22px; accent-color: var(--rojo); }
+.sugerencias { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.sugerencias button { min-height: 38px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(168, 50, 58, .35); background: #fff; font-size: 16px; cursor: pointer; }
+
+/* Paso 5: enviar */
+.ver-previa { display: flex; width: 100%; align-items: center; justify-content: center; gap: 10px; min-height: 60px; margin-top: 20px; border-radius: 16px; border: 2px solid var(--verde); background: #fff; color: var(--verde); font-weight: 600; font-size: 21px; cursor: pointer; }
+.precio { margin-top: 18px; padding: 20px 16px; border-radius: 18px; text-align: center; background: var(--papel); box-shadow: 0 6px 16px rgba(40, 40, 30, .08); }
+.precio .cifra { font-weight: 600; font-size: 44px; line-height: 1; color: var(--verde); }
+.precio ul { list-style: none; padding: 0; margin-top: 12px; text-align: left; display: grid; gap: 8px; font-size: 18px; line-height: 1.35; }
+.precio li { display: flex; gap: 8px; }
+.precio li::before { content: "✓"; color: var(--verde-claro); font-weight: 600; }
+.pagar { display: block; width: 100%; min-height: 60px; margin-top: 16px; border-radius: 16px; border: 0; background: var(--rojo); color: #fff; font-weight: 600; font-size: 22px; cursor: pointer; box-shadow: 0 8px 18px rgba(168, 50, 58, .3); }
+.pagar:disabled { background: #b9a9a4; box-shadow: none; cursor: default; }
+.nota { margin-top: 10px; text-align: center; font-size: 16px; font-style: italic; color: var(--suave); }
+
+/* Barra inferior */
+.barra-inf { position: fixed; left: 0; right: 0; bottom: 0; z-index: 12; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: rgba(247, 241, 230, .96); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-top: 1px solid rgba(196, 155, 85, .3); }
+.barra-inf .dentro { max-width: 528px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+.atras { min-height: 54px; padding: 0 16px; border: 0; background: none; font-weight: 600; font-size: 19px; color: var(--suave); cursor: pointer; }
+.siguiente { flex: 1; min-height: 56px; border-radius: 16px; border: 0; background: var(--verde); color: #fbf5e9; font-weight: 600; font-size: 21px; cursor: pointer; }
+.siguiente:disabled { opacity: .45; cursor: default; }
+button:focus-visible, .tipo:focus-visible { outline: 3px solid var(--oro); outline-offset: 3px; }
+
+/* Vista previa */
+.previa { position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; background: #13291d; }
+.previa .barra-previa { flex: none; display: flex; align-items: center; gap: 10px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: #0e2016; border-bottom: 1px solid rgba(210, 174, 106, .35); color: #e8dcc0; font-style: italic; font-size: 16px; }
+.previa iframe { flex: 1; width: 100%; border: 0; }
+.previa .cerrar-previa { flex: none; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .5); background: transparent; color: #fff; font-weight: 600; font-size: 17px; font-style: normal; cursor: pointer; }
+.trabajando { position: fixed; inset: 0; z-index: 40; display: grid; place-content: center; gap: 10px; text-align: center; background: rgba(247, 241, 230, .9); font-size: 20px; font-style: italic; }
+</style>
+</head>
+<body>
+<header class="barra-sup">
+  <p class="marca">Puertitas</p>
+  <ol class="pasos" aria-label="Pasos"><li></li><li></li><li></li><li></li><li></li></ol>
+</header>
+
+<main>
+  <!-- 1. Para quién -->
+  <section class="paso" data-paso="1">
+    <h1>¿Para quién es tu calendario?</h1>
+    <p class="sub">Elige y te lo dejamos con mensajes y regalos ya escritos. Luego cambias lo que quieras.</p>
+    <div class="tipos" role="group" aria-label="Para quién"></div>
+  </section>
+
+  <!-- 2. Nombres -->
+  <section class="paso" data-paso="2" hidden>
+    <h1>¿Cómo se llama?</h1>
+    <p class="sub">Así aparecerá en la portada del calendario.</p>
+    <label class="campo"><span>Su nombre</span><input id="para" type="text" maxlength="40" autocomplete="off" placeholder="Por ejemplo, Lucía"></label>
+    <label class="campo"><span>Tu nombre (o «De parte de…»)</span><input id="de" type="text" maxlength="40" autocomplete="off" placeholder="Por ejemplo, Marcos"></label>
+    <div class="muestra" aria-hidden="true"><p class="p">Para…</p><p class="d"></p></div>
+  </section>
+
+  <!-- 3. Fotos -->
+  <section class="paso" data-paso="3" hidden>
+    <h1>Vuestras fotos</h1>
+    <p class="sub">Elige hasta 24 de golpe. Se colocan solas, una por día. Toca dos casillas para cambiarlas de sitio.</p>
+    <button class="elegir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="9" cy="11" r="2"/><path d="m21 17-5-5-9 8"/></svg>Elegir fotos</button>
+    <input id="archivos" type="file" accept="image/*" multiple hidden>
+    <p class="cuenta-fotos" aria-live="polite"></p>
+    <div class="casillas"></div>
+  </section>
+
+  <!-- 4. Mensajes y regalos -->
+  <section class="paso" data-paso="4" hidden>
+    <h1>Mensajes y regalos</h1>
+    <p class="sub">Ya están escritos. Repásalos día a día y cambia lo que quieras.</p>
+    <div class="dias" role="group" aria-label="Días"></div>
+    <article class="tarjeta-dia">
+      <div class="cab"><h2 id="t-dia">1 de diciembre</h2><div class="nav-dia"><button type="button" class="ant" aria-label="Día anterior">‹</button><button type="button" class="sig" aria-label="Día siguiente">›</button></div></div>
+      <div class="foto-dia"><span class="vacia">Sin foto: este día llevará un dibujo navideño</span><button type="button" class="cambiar-foto">Poner foto</button></div>
+      <label class="campo"><span>Mensaje</span><textarea id="mensaje" maxlength="160"></textarea></label>
+      <button type="button" class="otra">Otra idea</button>
+      <div class="vale-caja">
+        <label class="interruptor"><input type="checkbox" id="con-vale"> Añadir un vale regalo</label>
+        <div class="vale-campos" hidden>
+          <label class="campo"><span>Vale por…</span><input id="vale" type="text" maxlength="70"></label>
+          <div class="sugerencias"></div>
+        </div>
+      </div>
+    </article>
+    <input id="archivo-dia" type="file" accept="image/*" hidden>
+  </section>
+
+  <!-- 5. Enviar -->
+  <section class="paso" data-paso="5" hidden>
+    <h1>¡Listo! Míralo antes de enviarlo</h1>
+    <p class="sub">Ábrelo como lo verá: puedes abrir todas las puertitas.</p>
+    <button class="ver-previa" type="button">Ver cómo queda</button>
+    <div class="precio">
+      <p class="cifra"></p>
+      <ul>
+        <li>Un enlace para enviar por WhatsApp</li>
+        <li>Cada día de diciembre se abre una puertita</li>
+        <li>Después de pagar puedes cambiarlo 3 veces más</li>
+        <li>Música, nieve y vales regalo incluidos</li>
+      </ul>
+      <button class="pagar" type="button" disabled>Pagar y recibir el enlace</button>
+      <p class="nota">Estamos activando los pagos: muy pronto podrás enviarlo. Tu calendario queda guardado en este móvil.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="barra-inf" aria-label="Avanzar">
+  <div class="dentro">
+    <button class="atras" type="button" hidden>Atrás</button>
+    <button class="siguiente" type="button">Siguiente</button>
+  </div>
+</nav>
+
+<div class="acciones-foto" hidden role="status">
+  <p>Toca otra casilla para cambiarlas de sitio</p>
+  <div class="fila"><button type="button" class="af-cambiar">Cambiar esta foto</button><button type="button" class="af-quitar">Quitar</button><button type="button" class="af-listo">Listo</button></div>
+</div>
+<div class="previa" hidden><div class="barra-previa"><button type="button" class="cerrar-previa">← Volver a editar</button><span>Vista previa</span></div></div>
+<div class="trabajando" hidden><p>Preparando tus fotos…</p><p class="progreso"></p></div>
+
+<script>
+(() => {
+  'use strict';
+  const d = document, $ = s => d.querySelector(s), $$ = s => [...d.querySelectorAll(s)];
+  const IDEAS = window.IDEAS;
+
+  // ----- Guardado en el móvil (IndexedDB): el borrador y las fotos -----
+  const bd = new Promise((ok, mal) => {
+    const r = indexedDB.open('puertitas', 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('borrador'); r.result.createObjectStore('fotos'); };
+    r.onsuccess = () => ok(r.result); r.onerror = () => mal(r.error);
+  });
+  const op = async (almacen, modo, f) => { const db = await bd; return new Promise((ok, mal) => { const tx = db.transaction(almacen, modo); const r = f(tx.objectStore(almacen)); tx.oncomplete = () => ok(r && r.result); tx.onerror = () => mal(tx.error); }); };
+  const leerBorrador = () => op('borrador', 'readonly', s => s.get('actual'));
+  const guardarFoto = (id, blob) => op('fotos', 'readwrite', s => s.put(blob, id));
+  const leerFoto = id => op('fotos', 'readonly', s => s.get(id));
+  const borrarFoto = id => op('fotos', 'readwrite', s => s.delete(id));
+  let temporizador;
+  const guardar = () => { clearTimeout(temporizador); temporizador = setTimeout(() => op('borrador', 'readwrite', s => s.put(JSON.parse(JSON.stringify(E)), 'actual')).catch(() => {}), 300); };
+
+  // ----- Estado -----
+  let E = { tipo: null, para: '', de: '', dias: [], paso: 1 };
+  const urls = new Map();
+  const urlFoto = async id => { if (!id) return null; if (!urls.has(id)) { const b = await leerFoto(id); if (!b) return null; urls.set(id, URL.createObjectURL(b)); } return urls.get(id); };
+  const rellenarDias = tipo => {
+    const viejos = E.dias;
+    E.dias = IDEAS[tipo].dias.map(([mensaje, vale], i) => ({ dia: i + 1, foto: viejos[i] ? viejos[i].foto : null, mensaje, vale: vale || '' }));
+  };
+
+  // ----- Comprimir fotos en el móvil (máximo 1080 px, JPEG) -----
+  async function comprimir(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image(); img.src = url; await img.decode();
+      const lado = 1080, k = Math.min(1, lado / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = d.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      return await new Promise(r => c.toBlob(r, 'image/jpeg', .82));
+    } finally { URL.revokeObjectURL(url); }
+  }
+  const nuevoId = () => 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  async function anadirFotos(files, empezarEn = null) {
+    const lista = [...files].filter(f => f.type.startsWith('image/'));
+    if (!lista.length) return;
+    $('.trabajando').hidden = false;
+    let destino = Number.isInteger(empezarEn) && E.dias[empezarEn] ? empezarEn : null;
+    try {
+      for (let i = 0; i < lista.length; i++) {
+        $('.progreso').textContent = `${i + 1} de ${lista.length}`;
+        if (destino === null || E.dias[destino].foto) destino = E.dias.findIndex(x => !x.foto);
+        if (destino === -1) break;
+        try {
+          const blob = await comprimir(lista[i]);
+          const id = nuevoId(); await guardarFoto(id, blob);
+          E.dias[destino].foto = id;
+        } catch (e) { /* una foto que no se puede leer se salta */ }
+        destino = null;
+      }
+    } finally {
+      $('.trabajando').hidden = true;
+      guardar(); pintarCasillas(); pintarDia();
+    }
+  }
+
+  // ----- Pasos -----
+  const TOTAL = 5;
+  function irA(n) {
+    E.paso = n; guardar();
+    $$('.paso').forEach(s => s.hidden = +s.dataset.paso !== n);
+    $$('.pasos li').forEach((li, i) => { li.className = i + 1 < n ? 'hecho' : i + 1 === n ? 'actual' : ''; });
+    $('.atras').hidden = n === 1;
+    $('.siguiente').hidden = n === TOTAL;
+    $('.acciones-foto').hidden = true; seleccion = null;
+    if (n === 3) pintarCasillas();
+    if (n === 4) { pintarChips(); pintarDia(); }
+    if (n === 5) $('.precio .cifra').textContent = PRECIO;
+    validar(); scrollTo({ top: 0 });
+  }
+  function validar() {
+    const ok = E.paso === 1 ? !!E.tipo : E.paso === 2 ? E.para.trim().length > 0 : true;
+    $('.siguiente').disabled = !ok;
+  }
+  $('.siguiente').addEventListener('click', () => irA(Math.min(TOTAL, E.paso + 1)));
+  $('.atras').addEventListener('click', () => irA(Math.max(1, E.paso - 1)));
+
+  // Paso 1
+  const tipos = $('.tipos');
+  Object.entries(IDEAS).forEach(([clave, t]) => {
+    const b = d.createElement('button');
+    b.type = 'button'; b.className = 'tipo'; b.dataset.tipo = clave; b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = `<span class="emo" aria-hidden="true">${t.emoji}</span><span class="nom"></span><span class="pis"></span>`;
+    b.querySelector('.nom').textContent = t.nombre; b.querySelector('.pis').textContent = t.pista;
+    b.addEventListener('click', () => {
+      if (E.tipo !== clave) { E.tipo = clave; rellenarDias(clave); }
+      $$('.tipo').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tipo === clave)));
+      guardar(); validar();
+      setTimeout(() => irA(2), 250);
+    });
+    tipos.appendChild(b);
+  });
+
+  // Paso 2
+  const pintarMuestra = () => { $('.muestra .p').textContent = E.para.trim() ? `Para ${E.para.trim()}` : 'Para…'; $('.muestra .d').textContent = E.de.trim() ? `Un calendario de Adviento de ${E.de.trim()}` : ''; };
+  $('#para').addEventListener('input', e => { E.para = e.target.value; pintarMuestra(); guardar(); validar(); });
+  $('#de').addEventListener('input', e => { E.de = e.target.value; pintarMuestra(); guardar(); });
+
+  // Paso 3
+  let seleccion = null;
+  $('.elegir').addEventListener('click', () => { $('#archivos').dataset.destino = ''; $('#archivos').click(); });
+  $('#archivos').addEventListener('change', async e => { const dest = e.target.dataset.destino; await anadirFotos(e.target.files, dest ? +dest : null); e.target.dataset.destino = ''; e.target.value = ''; });
+  async function pintarCasillas() {
+    const cont = $('.casillas'); cont.textContent = '';
+    const con = E.dias.filter(x => x.foto).length;
+    $('.cuenta-fotos').textContent = con === 0 ? 'Aún no hay fotos. Los días sin foto llevan un dibujo navideño.' : con === 24 ? '¡Las 24 puertitas tienen foto!' : `${con} de 24 con foto. Los días sin foto llevan un dibujo navideño.`;
+    for (let i = 0; i < E.dias.length; i++) {
+      const x = E.dias[i];
+      const b = d.createElement('button'); b.type = 'button'; b.className = 'casilla' + (x.foto ? ' llena' : '') + (seleccion === i ? ' elegida' : '');
+      b.setAttribute('aria-label', x.foto ? `Día ${i + 1}, con foto` : `Día ${i + 1}, sin foto`);
+      const u = await urlFoto(x.foto);
+      b.innerHTML = (u ? `<img alt="" src="${u}">` : '<span class="mas" aria-hidden="true">+</span>') + `<span class="n">${i + 1}</span>`;
+      b.addEventListener('click', () => tocarCasilla(i));
+      cont.appendChild(b);
+    }
+  }
+  function tocarCasilla(i) {
+    if (seleccion === null) {
+      if (!E.dias[i].foto) { $('#archivos').dataset.destino = String(i); $('#archivos').click(); return; }
+      seleccion = i; $('.acciones-foto').hidden = false; pintarCasillas(); return;
+    }
+    if (seleccion === i) { seleccion = null; $('.acciones-foto').hidden = true; pintarCasillas(); return; }
+    const a = E.dias[seleccion].foto; E.dias[seleccion].foto = E.dias[i].foto; E.dias[i].foto = a;
+    seleccion = null; $('.acciones-foto').hidden = true; guardar(); pintarCasillas();
+  }
+  $('.af-listo').addEventListener('click', () => { seleccion = null; $('.acciones-foto').hidden = true; pintarCasillas(); });
+  $('.af-quitar').addEventListener('click', async () => { const id = E.dias[seleccion].foto; E.dias[seleccion].foto = null; seleccion = null; $('.acciones-foto').hidden = true; guardar(); pintarCasillas(); if (id) borrarFoto(id).catch(() => {}); });
+  $('.af-cambiar').addEventListener('click', () => { const i = seleccion; E.dias[i].foto = null; seleccion = null; $('.acciones-foto').hidden = true; $('#archivos').dataset.destino = String(i); $('#archivos').click(); });
+
+  // Paso 4
+  let diaActual = 0, otraIdx = 0;
+  function pintarChips() {
+    const cont = $('.dias'); cont.textContent = '';
+    E.dias.forEach((x, i) => {
+      const b = d.createElement('button'); b.type = 'button'; b.className = 'dia-chip' + (x.vale ? ' con-vale' : ''); b.textContent = i + 1;
+      b.setAttribute('aria-pressed', String(i === diaActual)); b.setAttribute('aria-label', `Día ${i + 1}${x.vale ? ', con vale' : ''}`);
+      b.addEventListener('click', () => { diaActual = i; pintarChips(); pintarDia(); });
+      cont.appendChild(b);
+    });
+    const act = cont.children[diaActual]; if (act) act.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }
+  async function pintarDia() {
+    if (E.paso !== 4 || !E.dias.length) return;
+    const x = E.dias[diaActual];
+    $('#t-dia').textContent = `${diaActual + 1} de diciembre`;
+    const caja = $('.foto-dia'); const u = await urlFoto(x.foto);
+    caja.querySelector('img')?.remove();
+    if (u) { const img = d.createElement('img'); img.src = u; img.alt = ''; caja.prepend(img); }
+    caja.querySelector('.vacia').hidden = !!u;
+    caja.querySelector('.cambiar-foto').textContent = u ? 'Cambiar foto' : 'Poner foto';
+    $('#mensaje').value = x.mensaje;
+    $('#con-vale').checked = !!x.vale; $('.vale-campos').hidden = !x.vale; $('#vale').value = x.vale;
+    const sug = $('.sugerencias'); sug.textContent = '';
+    IDEAS[E.tipo].vales.forEach(v => { const b = d.createElement('button'); b.type = 'button'; b.textContent = v; b.addEventListener('click', () => { x.vale = v; $('#vale').value = v; guardar(); pintarChips(); }); sug.appendChild(b); });
+  }
+  $('.ant').addEventListener('click', () => { diaActual = (diaActual + 23) % 24; pintarChips(); pintarDia(); });
+  $('.sig').addEventListener('click', () => { diaActual = (diaActual + 1) % 24; pintarChips(); pintarDia(); });
+  $('#mensaje').addEventListener('input', e => { E.dias[diaActual].mensaje = e.target.value; guardar(); });
+  $('.otra').addEventListener('click', () => {
+    const banco = [...IDEAS[E.tipo].otras, ...IDEAS[E.tipo].dias.map(x => x[0])].filter(m => m !== E.dias[diaActual].mensaje);
+    E.dias[diaActual].mensaje = banco[otraIdx++ % banco.length]; $('#mensaje').value = E.dias[diaActual].mensaje; guardar();
+  });
+  $('#con-vale').addEventListener('change', e => {
+    const x = E.dias[diaActual];
+    if (e.target.checked) { x.vale = x.vale || IDEAS[E.tipo].vales[diaActual % IDEAS[E.tipo].vales.length]; } else x.vale = '';
+    $('#vale').value = x.vale; $('.vale-campos').hidden = !x.vale; guardar(); pintarChips();
+  });
+  $('#vale').addEventListener('input', e => { E.dias[diaActual].vale = e.target.value; guardar(); });
+  $('.cambiar-foto').addEventListener('click', () => $('#archivo-dia').click());
+  $('#archivo-dia').addEventListener('change', async e => { if (e.target.files[0]) { E.dias[diaActual].foto = null; await anadirFotos(e.target.files, diaActual); } e.target.value = ''; });
+
+  // Paso 5: vista previa con el visor de verdad
+  const previa = $('.previa');
+  let marco = null;
+  addEventListener('message', async e => {
+    if (e.origin !== location.origin || !e.data || e.data.tipo !== 'listo' || !marco) return;
+    const dias = await Promise.all(E.dias.map(async x => ({ dia: x.dia, mensaje: x.mensaje, vale: x.vale || undefined, foto: await urlFoto(x.foto) })));
+    marco.contentWindow.postMessage({ tipo: 'calendario', datos: { id: 'vista-previa', para: E.para.trim(), de: E.de.trim(), anio: 2026, zona: 'Europe/Madrid', dias } }, location.origin);
+  });
+  $('.ver-previa').addEventListener('click', () => {
+    marco = d.createElement('iframe'); marco.title = 'Vista previa del calendario'; marco.src = `${VISOR_URL}?vista=1`;
+    previa.appendChild(marco); previa.hidden = false; d.body.style.overflow = 'hidden';
+  });
+  $('.cerrar-previa').addEventListener('click', () => { marco?.remove(); marco = null; previa.hidden = true; d.body.style.overflow = ''; });
+
+  // ----- Arranque: recupera el borrador si lo hay -----
+  (async () => {
+    try { const b = await leerBorrador(); if (b && b.tipo) E = Object.assign(E, b); } catch (e) {}
+    if (E.tipo) $$('.tipo').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tipo === E.tipo)));
+    $('#para').value = E.para; $('#de').value = E.de; pintarMuestra();
+    irA(E.tipo ? (E.paso || 1) : 1);
+  })();
+})();
+</script>
+</body>
+</html>
