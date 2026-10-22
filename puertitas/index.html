@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Puertitas · Calendario de Adviento con vuestras fotos</title>
 <meta name="description" content="Un calendario de Adviento con vuestras fotos: 24 puertitas que se abren una cada día de diciembre, con un recuerdo, un mensaje y algún vale regalo. Se crea en 5 minutos y se envía por WhatsApp.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23c49b55' d='M10 0Q11 9 20 10 11 11 10 20 9 11 0 10 9 9 10 0Z'/%3E%3C/svg%3E">
 <meta name="theme-color" content="#f7f1e6">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
@@ -18,6 +19,8 @@
 const CREAR_URL = "../crear/";
 const DEMO_URL = "../adviento-demo/";
 const PRECIO = "14,90 €";
+/* Un calendario de ejemplo por tipo */
+const EJEMPLOS = { pareja: "../adviento-demo/", hijos: "../adviento-hijos/", familia: "../adviento-familia/" };
 </script>
 <link rel="preload" href="../fuentes/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fuentes/pinyon-script.woff2" as="font" type="font/woff2" crossorigin>
@@ -92,6 +95,7 @@ section.bloque { padding: 54px 0; }
 .idea .vale { margin-top: 12px; padding: 10px 12px; border-radius: 10px; border: 2px dashed var(--oro); background: #fbf2df; font-weight: 600; font-size: 18px; }
 .idea .vale span { display: block; font-size: 12px; letter-spacing: .26em; color: var(--rojo); }
 .idea .boton { margin-top: 16px; align-self: flex-start; min-height: 50px; font-size: 19px; padding: 10px 20px; }
+.idea .ver-ejemplo { margin-top: 10px; align-self: flex-start; padding: 6px 2px; font-size: 18px; font-style: italic; color: var(--verde); text-underline-offset: 4px; }
 
 .especial { display: grid; gap: 12px; margin-top: 28px; list-style: none; padding: 0; }
 @media (min-width: 760px) { .especial { grid-template-columns: repeat(3, 1fr); } }
@@ -262,6 +266,7 @@ section.bloque { padding: 54px 0; }
     a.querySelector('.frase').textContent = `«${t.dias[0][0]}»`;
     a.querySelector('.vale').append(conVale ? conVale[1] : '');
     const b = a.querySelector('.boton'); b.href = `${CREAR_URL}?tipo=${clave}`; b.textContent = 'Crear este';
+    if (EJEMPLOS[clave]) { const e = d.createElement('a'); e.className = 'ver-ejemplo'; e.href = EJEMPLOS[clave]; e.textContent = 'Ver un ejemplo'; b.after(e); }
     ideas.appendChild(a);
   });
 

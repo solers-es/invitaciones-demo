@@ -1,0 +1,123 @@
+{
+  "id": "demo-familia",
+  "demo": true,
+  "para": "los abuelos",
+  "de": "vuestros nietos",
+  "anio": 2026,
+  "zona": "Europe/Madrid",
+  "crearUrl": "../crear/?tipo=familia",
+  "dias": [
+    {
+      "dia": 1,
+      "mensaje": "Empieza diciembre y lo primero que pienso es en vosotros.",
+      "foto": "fotos/dia-1.jpg"
+    },
+    {
+      "dia": 2,
+      "mensaje": "¿Os acordáis de esta foto? Yo no me canso de mirarla."
+    },
+    {
+      "dia": 3,
+      "mensaje": "Gracias por enseñarme lo que de verdad importa."
+    },
+    {
+      "dia": 4,
+      "mensaje": "Hoy la comida la pongo yo.",
+      "vale": "Una comida hecha por mí",
+      "foto": "fotos/dia-4.jpg"
+    },
+    {
+      "dia": 5,
+      "mensaje": "Las mejores Navidades siempre fueron en vuestra casa.",
+      "foto": "fotos/dia-5.jpg"
+    },
+    {
+      "dia": 6,
+      "mensaje": "Esta foto huele a turrón y a sobremesa larga.",
+      "foto": "fotos/dia-6.jpg"
+    },
+    {
+      "dia": 7,
+      "mensaje": "Hoy toca llamada larga, sin prisas.",
+      "vale": "Una videollamada sin mirar el reloj",
+      "foto": "fotos/dia-7.jpg"
+    },
+    {
+      "dia": 8,
+      "mensaje": "Todo lo bueno que tengo empezó con vosotros."
+    },
+    {
+      "dia": 9,
+      "mensaje": "Qué guapos salís aquí."
+    },
+    {
+      "dia": 10,
+      "mensaje": "Gracias por estar siempre, también en los días difíciles."
+    },
+    {
+      "dia": 11,
+      "mensaje": "Esta tarde, cartas y café.",
+      "vale": "Una tarde de cartas y café",
+      "foto": "fotos/dia-11.jpg"
+    },
+    {
+      "dia": 12,
+      "mensaje": "Doce días y cada uno me acuerdo de algo vuestro."
+    },
+    {
+      "dia": 13,
+      "mensaje": "Esta es de mis fotos favoritas de la familia."
+    },
+    {
+      "dia": 14,
+      "mensaje": "Hoy os llevo a pasear.",
+      "vale": "Un paseo y merienda juntos",
+      "foto": "fotos/dia-14.jpg"
+    },
+    {
+      "dia": 15,
+      "mensaje": "Vuestras recetas no las iguala nadie.",
+      "foto": "fotos/dia-15.jpg"
+    },
+    {
+      "dia": 16,
+      "mensaje": "Gracias por cada abrazo y cada consejo."
+    },
+    {
+      "dia": 17,
+      "mensaje": "Hoy os ayudo con lo que haga falta en casa.",
+      "vale": "Una mañana de ayuda en casa"
+    },
+    {
+      "dia": 18,
+      "mensaje": "Mirad qué pequeños éramos aquí."
+    },
+    {
+      "dia": 19,
+      "mensaje": "Con vosotros aprendí a querer bonito."
+    },
+    {
+      "dia": 20,
+      "mensaje": "Hoy elegís vosotros el plan.",
+      "vale": "Un plan a vuestra elección"
+    },
+    {
+      "dia": 21,
+      "mensaje": "Ya queda poco para estar todos juntos."
+    },
+    {
+      "dia": 22,
+      "mensaje": "Cuando sea mayor quiero ser como vosotros."
+    },
+    {
+      "dia": 23,
+      "mensaje": "Mañana es Nochebuena: guardadme sitio en la mesa."
+    },
+    {
+      "dia": 24,
+      "mensaje": "Feliz Navidad. Sois el mejor regalo que tengo.",
+      "vale": "Un día entero juntos, organizado por mí",
+      "foto": "fotos/dia-24.jpg"
+    }
+  ]
+}

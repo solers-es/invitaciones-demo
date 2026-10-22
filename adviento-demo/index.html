@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tu calendario de Adviento</title>
 <meta name="description" content="Un calendario de Adviento con 24 puertitas: cada día de diciembre se abre una con una foto y un mensaje.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23d2ae6a' d='M10 0Q11 9 20 10 11 11 10 20 9 11 0 10 9 9 10 0Z'/%3E%3C/svg%3E">
 <meta name="theme-color" content="#16301f">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:type" content="website">
@@ -98,7 +99,7 @@ header { text-align: center; margin-bottom: 16px; }
 .casilla.grande .frente { place-items: end center; padding-bottom: 12%; }
 .abierta .puerta { transform: rotateY(-108deg); }
 .abierta .lazo { display: none; }
-.casilla.bloqueada .puerta:active { animation: tiembla .35s ease; }
+.casilla.bloqueada .puerta:active, .casilla.tiembla .puerta { animation: tiembla .35s ease; }
 @keyframes tiembla { 25% { transform: rotateY(-6deg); } 50% { transform: rotateY(3deg); } 75% { transform: rotateY(-2deg); } }
 .hoy .frente { animation: brilla 2.4s ease-in-out infinite; }
 @keyframes brilla { 50% { box-shadow: 0 0 0 2px #f6e3b2, 0 0 18px 4px rgba(246, 227, 178, .7), inset 0 0 0 5px rgba(210, 174, 106, .55); } }
@@ -291,6 +292,7 @@ header { text-align: center; margin-bottom: 16px; }
   async function tocar(n, casilla) {
     musica.alAbrir();
     if (n > abiertoHasta) {
+      casilla.classList.add('tiembla'); setTimeout(() => casilla.classList.remove('tiembla'), 400);
       const f = diasHasta(n);
       aviso(f === 1 ? `La puertita ${n} se abre mañana ✨` : `La puertita ${n} se abre el ${n} de diciembre. Faltan ${f} días ✨`);
       return;
@@ -379,11 +381,18 @@ header { text-align: center; margin-bottom: 16px; }
     if (params.get('gancho')) { gancho.textContent = params.get('gancho'); gancho.hidden = false; }
     window.iniciarVideo = async () => {
       const dias = (params.get('dias') || '1,4,7,11,24').split(',').map(Number);
+      const intentar = (params.get('intentar') || '').split(',').filter(Boolean).map(Number); // puertas cerradas que se tocan antes
+      const buscar = n => [...rejilla.children].find(x => x.querySelector('.num')?.textContent === String(n));
       gancho.classList.add('fuera');
       await pausa(600);
+      for (const n of intentar) {
+        rotulo.textContent = `Intento abrir la ${n}…`; rotulo.hidden = false;
+        await tocar(n, buscar(n));
+        await pausa(1700);
+      }
       for (const n of dias) {
-        const casilla = [...rejilla.children].find(x => x.querySelector('.num')?.textContent === String(n));
-        rotulo.textContent = n === 24 ? '24 de diciembre 🎁' : `${n} de diciembre`; rotulo.hidden = false;
+        const casilla = buscar(n);
+        rotulo.textContent = n === diaDeHoy ? `Hoy toca la ${n} ✨` : n === 24 ? '24 de diciembre 🎁' : `${n} de diciembre`; rotulo.hidden = false;
         await tocar(n, casilla);
         await pausa(2600);
         cerrar(); await pausa(650);

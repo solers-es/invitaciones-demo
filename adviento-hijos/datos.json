@@ -1,0 +1,124 @@
+{
+  "id": "demo-hijos",
+  "demo": true,
+  "para": "Martina y Leo",
+  "de": "mamá y papá",
+  "anio": 2026,
+  "zona": "Europe/Madrid",
+  "crearUrl": "../crear/?tipo=hijos",
+  "dias": [
+    {
+      "dia": 1,
+      "mensaje": "¡Empieza la cuenta atrás! Hoy toca escribir la carta a los Reyes.",
+      "foto": "fotos/dia-1.jpg"
+    },
+    {
+      "dia": 2,
+      "mensaje": "Hoy decoramos el árbol todos juntos.",
+      "foto": "fotos/dia-2.jpg"
+    },
+    {
+      "dia": 3,
+      "mensaje": "Reto del día: dibuja tu juguete favorito y pégalo en la nevera."
+    },
+    {
+      "dia": 4,
+      "mensaje": "Hoy hay chocolate caliente después del cole.",
+      "vale": "Un chocolate caliente con nubes",
+      "foto": "fotos/dia-4.jpg"
+    },
+    {
+      "dia": 5,
+      "mensaje": "Busca tres cosas rojas en casa y cuéntanoslo."
+    },
+    {
+      "dia": 6,
+      "mensaje": "Esta noche toca cuento de Navidad antes de dormir."
+    },
+    {
+      "dia": 7,
+      "mensaje": "¡Manos a la masa! Hoy hacemos galletas.",
+      "vale": "Una tarde de galletas",
+      "foto": "fotos/dia-7.jpg"
+    },
+    {
+      "dia": 8,
+      "mensaje": "Haz una tarjeta para alguien a quien quieras mucho."
+    },
+    {
+      "dia": 9,
+      "mensaje": "Hoy eliges tú la peli de la noche.",
+      "vale": "Elegir la peli",
+      "foto": "fotos/dia-9.jpg"
+    },
+    {
+      "dia": 10,
+      "mensaje": "Canta un villancico bien alto, aunque desafines."
+    },
+    {
+      "dia": 11,
+      "mensaje": "Reto: ordena tu cuarto en diez minutos. ¡Cronómetro en marcha!"
+    },
+    {
+      "dia": 12,
+      "mensaje": "Hoy hay guerra de cosquillas. Estás avisado."
+    },
+    {
+      "dia": 13,
+      "mensaje": "Di tres cosas por las que hoy das las gracias."
+    },
+    {
+      "dia": 14,
+      "mensaje": "Esta tarde salimos a ver las luces de Navidad.",
+      "vale": "Paseo para ver las luces",
+      "foto": "fotos/dia-14.jpg"
+    },
+    {
+      "dia": 15,
+      "mensaje": "Haz un muñeco de nieve… de papel.",
+      "foto": "fotos/dia-15.jpg"
+    },
+    {
+      "dia": 16,
+      "mensaje": "Mañana desayunas lo que tú quieras.",
+      "vale": "Desayuno a la carta"
+    },
+    {
+      "dia": 17,
+      "mensaje": "Esconde un calcetín y que los demás lo busquen."
+    },
+    {
+      "dia": 18,
+      "mensaje": "Hoy te puedes acostar quince minutos más tarde.",
+      "vale": "Quince minutos más antes de dormir"
+    },
+    {
+      "dia": 19,
+      "mensaje": "Regala un abrazo a cada persona de casa."
+    },
+    {
+      "dia": 20,
+      "mensaje": "Prepara un dibujo para los abuelos."
+    },
+    {
+      "dia": 21,
+      "mensaje": "¡Noche de pijamas en el salón!",
+      "vale": "Dormir en el salón con mantas",
+      "foto": "fotos/dia-21.jpg"
+    },
+    {
+      "dia": 22,
+      "mensaje": "Hoy jugamos a un juego de mesa en familia."
+    },
+    {
+      "dia": 23,
+      "mensaje": "Esta noche dejamos preparadas unas galletas por si viene alguien especial…"
+    },
+    {
+      "dia": 24,
+      "mensaje": "¡Ya está aquí la Navidad! Busca tu sorpresa.",
+      "vale": "La gran sorpresa de Navidad",
+      "foto": "fotos/dia-24.jpg"
+    }
+  ]
+}

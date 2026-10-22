@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tu calendario de Adviento</title>
+<meta name="description" content="Un calendario de Adviento con 24 puertitas: cada día de diciembre se abre una con una foto y un mensaje.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23d2ae6a' d='M10 0Q11 9 20 10 11 11 10 20 9 11 0 10 9 9 10 0Z'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#16301f">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tienes un calendario de Adviento">
+<meta property="og:description" content="24 puertitas, una cada día de diciembre. Toca para abrir la de hoy.">
+<link rel="preload" href="../fuentes/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fuentes/pinyon-script.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500 600; font-display: swap; src: url("../fuentes/cormorant-garamond.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; font-display: swap; src: url("../fuentes/cormorant-garamond-italica.woff2") format("woff2"); }
+@font-face { font-family: "Pinyon Script"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fuentes/pinyon-script.woff2") format("woff2"); }
+:root {
+  --verde: #1b3a2a; --verde-2: #13291d; --rojo: #a8323a; --oro: #d2ae6a; --oro-2: #a8823f; --crema: #fbf5e9; --tinta: #2a2a2a;
+  --serif: "Cormorant Garamond", Georgia, serif; --caligrafia: "Pinyon Script", "Snell Roundhand", Georgia, serif;
+  --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .26 0 0 0 0 .2 .12 0 0 0 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  --estrellitas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Cg fill='%23d2ae6a'%3E%3Cpath d='M12 8q.6 4 4.5 4.5-3.9.5-4.5 4.5-.6-4-4.5-4.5 3.9-.5 4.5-4.5z' opacity='.5'/%3E%3Ccircle cx='48' cy='20' r='.9' opacity='.6'/%3E%3Ccircle cx='30' cy='50' r='.7' opacity='.5'/%3E%3Cpath d='M56 46q.4 2.6 3 3-2.6.4-3 3-.4-2.6-3-3 2.6-.4 3-3z' opacity='.4'/%3E%3C/g%3E%3C/svg%3E");
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  min-height: 100vh; min-height: 100svh;
+  font-family: var(--serif); color: var(--crema);
+  background: radial-gradient(120% 70% at 50% 0%, #2a5a3f 0%, var(--verde) 45%, var(--verde-2) 100%);
+  overflow-x: hidden; -webkit-tap-highlight-color: transparent;
+}
+/* Nieve */
+.nieve { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.nieve i {
+  position: absolute; top: -10px; width: var(--t); height: var(--t); border-radius: 50%;
+  background: #fff; opacity: var(--o); filter: blur(.4px);
+  animation: cae var(--d) linear var(--r) infinite;
+}
+@keyframes cae { to { transform: translate3d(var(--x), 105vh, 0); } }
+
+.cargador { position: fixed; inset: 0; display: grid; place-content: center; font-style: italic; font-size: 18px; z-index: 40; transition: opacity .5s; }
+body:not(.cargando) .cargador { opacity: 0; pointer-events: none; }
+body.cargando main { visibility: hidden; }
+
+main { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: max(22px, env(safe-area-inset-top)) 14px 120px; }
+.demo-aviso {
+  margin: 0 auto 14px; max-width: 460px; text-align: center; font-size: 15px; font-style: italic; line-height: 1.35;
+  padding: 8px 14px; border-radius: 12px; background: rgba(0, 0, 0, .22); border: 1px solid rgba(210, 174, 106, .35);
+}
+header { text-align: center; margin-bottom: 16px; }
+.para { font-family: var(--caligrafia); font-weight: 400; font-size: clamp(46px, 13vw, 66px); line-height: 1.08; color: #f6e7c4; text-shadow: 0 2px 12px rgba(0, 0, 0, .35); padding: 0 .1em; }
+.de { margin-top: 2px; font-size: 18px; font-style: italic; color: #e8dcc0; }
+.cuenta-atras { margin-top: 10px; display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 999px; background: rgba(0, 0, 0, .22); border: 1px solid rgba(210, 174, 106, .4); font-weight: 600; font-size: 16px; letter-spacing: .02em; }
+.cuenta-atras::before { content: ""; width: 12px; height: 12px; background: var(--oro); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+
+/* Tablero con las 24 puertitas */
+.tablero {
+  position: relative; padding: 14px; border-radius: 18px;
+  background: var(--estrellitas), linear-gradient(160deg, #24493a, #17321f);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(210, 174, 106, .55), inset 0 0 0 6px rgba(0, 0, 0, .15), inset 0 0 0 7px rgba(210, 174, 106, .3);
+}
+.rejilla { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+.casilla { position: relative; aspect-ratio: 1 / 1.12; perspective: 520px; }
+.casilla.grande { grid-column: span 2; aspect-ratio: auto; }
+.hueco {
+  position: absolute; inset: 0; border-radius: 9px; overflow: hidden;
+  background: #0c1a12; box-shadow: inset 0 2px 8px rgba(0, 0, 0, .7);
+}
+.hueco img, .hueco .fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hueco .fondo { display: grid; place-items: center; font-size: 30px; }
+.puerta {
+  position: absolute; inset: 0; border: 0; padding: 0; cursor: pointer; border-radius: 9px; background: none;
+  transform-origin: 0 50%; transform-style: preserve-3d;
+  transition: transform .9s cubic-bezier(.3, .7, .25, 1);
+  font-family: var(--serif); color: inherit; touch-action: manipulation;
+}
+.puerta .frente, .puerta .detras { position: absolute; inset: 0; border-radius: 9px; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.puerta .frente {
+  display: grid; place-items: center;
+  background-color: var(--c, var(--crema)); background-image: var(--grano), linear-gradient(160deg, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255, 255, 255, .25), inset 0 0 0 4px rgba(0, 0, 0, .05), inset 0 0 0 5px rgba(210, 174, 106, .55);
+}
+.puerta .frente .num {
+  font-weight: 600; font-size: clamp(24px, 7vw, 34px); line-height: 1;
+  background: linear-gradient(100deg, #6e4d1f, #a8823f 40%, #d2ae6a 52%, #94702f 66%, #6e4d1f); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .45));
+}
+.puerta.oscura .frente .num { background: linear-gradient(100deg, #f3dfa8, #fff6dc 50%, #ecd193); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .35)); }
+.puerta .frente .pomo { position: absolute; right: 9%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3d0, #b8914f); box-shadow: 0 1px 1px rgba(0, 0, 0, .3); }
+.puerta .detras { transform: rotateY(180deg); background: var(--c, var(--crema)); filter: brightness(.82); box-shadow: inset 0 0 0 5px rgba(210, 174, 106, .4); }
+.casilla.grande .frente .num { font-size: clamp(30px, 9vw, 44px); }
+.lazo { position: absolute; inset: 0; pointer-events: none; }
+.lazo::before, .lazo::after { content: ""; position: absolute; background: linear-gradient(180deg, #c8454c, #8e2830); box-shadow: 0 1px 2px rgba(0, 0, 0, .3); }
+.lazo::before { left: 0; right: 0; top: 24%; height: 10px; }
+.lazo::after { top: 0; bottom: 0; left: 16%; width: 10px; }
+.casilla.grande .frente { place-items: end center; padding-bottom: 12%; }
+.abierta .puerta { transform: rotateY(-108deg); }
+.abierta .lazo { display: none; }
+.casilla.bloqueada .puerta:active, .casilla.tiembla .puerta { animation: tiembla .35s ease; }
+@keyframes tiembla { 25% { transform: rotateY(-6deg); } 50% { transform: rotateY(3deg); } 75% { transform: rotateY(-2deg); } }
+.hoy .frente { animation: brilla 2.4s ease-in-out infinite; }
+@keyframes brilla { 50% { box-shadow: 0 0 0 2px #f6e3b2, 0 0 18px 4px rgba(246, 227, 178, .7), inset 0 0 0 5px rgba(210, 174, 106, .55); } }
+.puerta:focus-visible { outline: 3px solid #f6e3b2; outline-offset: 3px; }
+
+.pie { text-align: center; margin-top: 22px; font-size: 16px; font-style: italic; color: #e8dcc0; }
+.crea { display: inline-block; margin-top: 10px; padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(210, 174, 106, .6); color: #f6e7c4; text-decoration: none; font-weight: 600; font-style: normal; font-size: 17px; background: rgba(0, 0, 0, .18); }
+
+/* Aviso flotante */
+.aviso {
+  position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); z-index: 30;
+  width: max-content; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; text-align: center;
+  background: rgba(16, 32, 22, .94); border: 1px solid rgba(210, 174, 106, .5); font-size: 17px; line-height: 1.3;
+  opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
+}
+.aviso.ver { opacity: 1; transform: translate(-50%, 0); }
+
+/* Ventana con la foto (polaroid) */
+.ventana { position: fixed; inset: 0; z-index: 25; display: grid; place-items: center; padding: 18px; background: rgba(6, 14, 9, .62); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); opacity: 0; transition: opacity .35s; }
+.ventana.ver { opacity: 1; }
+.polaroid {
+  width: min(88vw, 380px); max-height: calc(100svh - 36px); overflow: auto;
+  padding: 14px 14px 18px; border-radius: 6px; color: var(--tinta);
+  background: #fffdf8; background-image: var(--grano);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .5);
+  transform: rotate(-2deg) scale(.86) translateY(16px); transition: transform .55s cubic-bezier(.3, 1.4, .4, 1);
+}
+.ventana.ver .polaroid { transform: rotate(-1.5deg) scale(1) translateY(0); }
+.polaroid .foto { position: relative; aspect-ratio: 1; border-radius: 2px; overflow: hidden; background: #e9e4da; }
+.polaroid .foto img, .polaroid .foto .fondo { width: 100%; height: 100%; object-fit: cover; display: grid; place-items: center; font-size: 84px; }
+.polaroid .dia { margin-top: 10px; font-weight: 600; font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: #8a6631; text-align: center; }
+.polaroid .mensaje { margin-top: 4px; font-family: var(--caligrafia); font-size: 30px; line-height: 1.2; text-align: center; color: #2b2b38; padding: 0 .1em; }
+.vale {
+  position: relative; margin: 16px 4px 2px; padding: 14px 14px 12px; text-align: center; border-radius: 8px;
+  background: #fbf2df; border: 2px dashed #c49b55;
+}
+.vale .etq { font-weight: 600; font-size: 13px; letter-spacing: .28em; color: #a8323a; }
+.vale .que { margin-top: 2px; font-weight: 600; font-size: 21px; line-height: 1.25; color: #2b2b38; }
+.cerrar { display: block; margin: 16px auto 0; min-height: 46px; padding: 10px 26px; border-radius: 999px; border: 0; background: #1b3a2a; color: #fbf5e9; font: 600 18px var(--serif); cursor: pointer; }
+.cerrar:focus-visible { outline: 3px solid var(--oro); outline-offset: 3px; }
+
+.musica { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 20; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; border: 1px solid rgba(210, 174, 106, .7); background: rgba(16, 32, 22, .85); color: #f6e7c4; cursor: pointer; }
+.musica svg { width: 22px; height: 22px; }
+.musica[aria-pressed="true"] { background: #f6e7c4; color: #1b3a2a; }
+
+/* Modo vídeo (para grabar los TikToks) */
+.gancho-video, .rotulo-video {
+  position: fixed; z-index: 35; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px);
+  padding: 10px 18px; border-radius: 16px; text-align: center; color: #fff; font-weight: 600; line-height: 1.25;
+  background: rgba(6, 14, 9, .7); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: opacity .5s ease;
+}
+.gancho-video { top: calc(16px + env(safe-area-inset-top)); font-size: 22px; }
+.gancho-video.abajo { top: auto; bottom: calc(26px + env(safe-area-inset-bottom)); }
+.gancho-video.fuera { opacity: 0; }
+.rotulo-video { top: calc(16px + env(safe-area-inset-top)); font-size: 20px; letter-spacing: .04em; z-index: 36; }
+.modo-video .musica, .modo-video .demo-aviso, .modo-video .crea, .modo-video .pie-texto { display: none !important; }
+.modo-video main { padding-top: 84px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nieve, .hoy .frente { animation: none !important; display: none; }
+  .puerta, .polaroid { transition: none; }
+}
+</style>
+</head>
+<body class="cargando">
+<div class="nieve" aria-hidden="true"></div>
+<div class="cargador" role="status">Preparando tu calendario…</div>
+
+<main>
+  <p class="demo-aviso" hidden>Esto es una demostración: puedes abrir todas las puertitas. En el de verdad, cada una se abre en su día.</p>
+  <header>
+    <h1 class="para"></h1>
+    <p class="de"></p>
+    <p class="cuenta-atras" aria-live="polite"></p>
+  </header>
+  <section class="tablero" aria-label="Calendario de Adviento">
+    <div class="rejilla"></div>
+  </section>
+  <p class="pie">
+    <span class="pie-texto">Vuelve cada día: hay una puertita nueva.</span><br>
+    <a class="crea" hidden>Crea uno para alguien</a>
+  </p>
+</main>
+
+<div class="ventana" hidden role="dialog" aria-modal="true" aria-labelledby="v-dia">
+  <article class="polaroid">
+    <div class="foto"></div>
+    <p class="dia" id="v-dia"></p>
+    <p class="mensaje"></p>
+    <div class="vale" hidden><p class="etq">VALE POR</p><p class="que"></p></div>
+    <button class="cerrar" type="button">Cerrar</button>
+  </article>
+</div>
+<p class="aviso" role="status"></p>
+<p class="gancho-video" hidden></p>
+<p class="rotulo-video" hidden></p>
+
+<button class="musica" type="button" aria-pressed="false" aria-label="Poner música">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+</button>
+
+<script>
+(async () => {
+  'use strict';
+  const d = document, $ = s => d.querySelector(s);
+  const params = new URLSearchParams(location.search);
+  const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pausa = ms => new Promise(r => setTimeout(r, ms));
+
+  // Los datos vienen de la propia página (window.CALENDARIO), del editor (vista previa) o de datos.json al lado
+  const vista = params.has('vista');
+  let C = window.CALENDARIO;
+  if (!C && vista) {
+    C = await new Promise(r => {
+      addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.tipo === 'calendario') r(e.data.datos); });
+      parent.postMessage({ tipo: 'listo' }, location.origin);
+    });
+  }
+  if (!C) { try { C = await (await fetch('datos.json', { cache: 'no-store' })).json(); } catch (e) { $('.cargador').textContent = 'No se ha podido cargar el calendario.'; return; } }
+
+  const demo = (!!C.demo || vista || params.has('demo')) && !params.has('nodemo');
+  if (vista) $('.demo-aviso').textContent = `Vista previa: así lo verá ${C.para || 'quien lo reciba'}. Aquí puedes abrir todas las puertitas; en el de verdad, cada una se abre en su día.`;
+  const ZONA = C.zona || 'Europe/Madrid', ANIO = C.anio || 2026;
+  const CLAVE = 'adviento-' + (C.id || 'demo');
+
+  // ----- Fecha de hoy en España (o simulada con ?hoy=7 para probar) -----
+  function hoyEnZona() {
+    if (params.has('hoy')) return { anio: ANIO, mes: 12, dia: +params.get('hoy') };
+    if (C.hoy && C.hoy.anio) return C.hoy; // fecha que da el servidor (cuadra con las puertas que entrega)
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: ZONA, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map(x => [x.type, x.value]));
+    return { anio: +p.year, mes: +p.month, dia: +p.day };
+  }
+  const H = hoyEnZona();
+  const enDiciembre = H.anio === ANIO && H.mes === 12;
+  const pasado = H.anio > ANIO;
+  const abiertoHasta = demo || pasado ? 24 : enDiciembre ? Math.min(24, H.dia) : 0;
+  const diaDeHoy = !demo && enDiciembre && H.dia <= 24 ? H.dia : 0;
+  const diasHasta = n => Math.round((Date.UTC(ANIO, 11, n) - Date.UTC(H.anio, H.mes - 1, H.dia)) / 864e5);
+
+  // ----- Cabecera -----
+  $('.para').textContent = C.para ? `Para ${C.para}` : 'Tu calendario';
+  $('.de').textContent = C.de ? `Un calendario de Adviento de ${C.de}` : '';
+  if (C.para) d.title = `Calendario de Adviento para ${C.para}`;
+  const escaparate = params.has('escaparate'); // dentro del móvil de la página de venta: sin avisos ni enlaces
+  if (demo && !escaparate) $('.demo-aviso').hidden = false;
+  const cuenta = $('.cuenta-atras');
+  if (demo) cuenta.textContent = '24 puertitas, una cada día';
+  else if (abiertoHasta === 0) { const f = diasHasta(1); cuenta.textContent = f === 1 ? 'Mañana se abre la primera puertita' : `Faltan ${f} días para la primera puertita`; }
+  else if (diaDeHoy) cuenta.textContent = diaDeHoy === 24 ? '¡Hoy se abre la última puertita!' : `Hoy se abre la puertita ${diaDeHoy}`;
+  else cuenta.textContent = '¡Feliz Navidad!';
+  if (C.crearUrl && !escaparate) { const a = $('.crea'); a.href = C.crearUrl; a.hidden = false; }
+
+  // ----- Puertitas -----
+  const ORDEN = [7, 18, 3, 12, 21, 1, 15, 9, 23, 5, 14, 20, 2, 11, 17, 6, 22, 10, 4, 19, 13, 8, 16, 24];
+  const COLORES = ['#fbf5e9', '#a8323a', '#2f5d4a', '#fbf5e9', '#c8a25c', '#fbf5e9', '#2f5d4a', '#a8323a'];
+  const ICONOS = ['🎄', '⭐', '🎁', '❄️', '☕', '🧦', '🔔', '🕯️', '🍪', '🦌', '⛄', '🎅'];
+  const abiertas = new Set((() => { try { return JSON.parse(localStorage.getItem(CLAVE) || '[]'); } catch (e) { return []; } })());
+  const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify([...abiertas])); } catch (e) {} };
+  const datosDia = n => (C.dias || []).find(x => x.dia === n) || { dia: n };
+  const fondo = n => { const f = d.createElement('div'); f.className = 'fondo'; f.style.background = `linear-gradient(150deg, hsl(${(n * 47) % 360} 45% 80%), hsl(${(n * 47 + 40) % 360} 40% 64%))`; f.textContent = ICONOS[n % ICONOS.length]; return f; };
+  const contenidoFoto = (n, cont) => {
+    const dd = datosDia(n);
+    if (dd.foto) { const i = d.createElement('img'); i.src = dd.foto; i.alt = ''; i.loading = 'lazy'; cont.appendChild(i); } else cont.appendChild(fondo(n));
+  };
+
+  const rejilla = $('.rejilla');
+  ORDEN.forEach((n, k) => {
+    const c = d.createElement('div');
+    c.className = 'casilla' + (n === 24 ? ' grande' : '');
+    const color = COLORES[(n * 3 + k) % COLORES.length];
+    const hueco = d.createElement('div'); hueco.className = 'hueco'; contenidoFoto(n, hueco);
+    const b = d.createElement('button');
+    b.type = 'button'; b.className = 'puerta' + (color !== '#fbf5e9' ? ' oscura' : '');
+    b.style.setProperty('--c', color);
+    b.innerHTML = `<span class="frente"><span class="num">${n}</span><span class="pomo"></span></span><span class="detras"></span>`;
+    b.setAttribute('aria-label', `Puertita ${n}`);
+    c.append(hueco, b);
+    if (n === 24) { const l = d.createElement('span'); l.className = 'lazo'; c.appendChild(l); }
+    if (n > abiertoHasta) c.classList.add('bloqueada');
+    if (n === diaDeHoy && !abiertas.has(n)) c.classList.add('hoy');
+    if (abiertas.has(n) && n <= abiertoHasta) c.classList.add('abierta');
+    b.addEventListener('click', () => tocar(n, c));
+    rejilla.appendChild(c);
+  });
+
+  // ----- Avisos -----
+  let reloj;
+  const aviso = t => { const a = $('.aviso'); a.textContent = t; a.classList.add('ver'); clearTimeout(reloj); reloj = setTimeout(() => a.classList.remove('ver'), 2800); };
+
+  async function tocar(n, casilla) {
+    musica.alAbrir();
+    if (n > abiertoHasta) {
+      casilla.classList.add('tiembla'); setTimeout(() => casilla.classList.remove('tiembla'), 400);
+      const f = diasHasta(n);
+      aviso(f === 1 ? `La puertita ${n} se abre mañana ✨` : `La puertita ${n} se abre el ${n} de diciembre. Faltan ${f} días ✨`);
+      return;
+    }
+    if (!casilla.classList.contains('abierta')) {
+      casilla.classList.add('abierta'); casilla.classList.remove('hoy');
+      abiertas.add(n); guardar();
+      if (!reducido) await pausa(750);
+    }
+    mostrar(n);
+  }
+
+  // ----- Ventana con la foto -----
+  const ventana = $('.ventana');
+  let ultimoBoton = null;
+  function mostrar(n) {
+    const dd = datosDia(n);
+    ultimoBoton = d.activeElement;
+    const foto = ventana.querySelector('.foto'); foto.textContent = ''; contenidoFoto(n, foto);
+    ventana.querySelector('.dia').textContent = `${n} de diciembre`;
+    ventana.querySelector('.mensaje').textContent = dd.mensaje || '';
+    const v = ventana.querySelector('.vale');
+    v.hidden = !dd.vale; if (dd.vale) v.querySelector('.que').textContent = dd.vale;
+    ventana.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => ventana.classList.add('ver')));
+    ventana.querySelector('.cerrar').focus({ preventScroll: true });
+  }
+  function cerrar() {
+    ventana.classList.remove('ver');
+    setTimeout(() => { ventana.hidden = true; if (ultimoBoton) ultimoBoton.focus({ preventScroll: true }); }, reducido ? 0 : 300);
+  }
+  ventana.querySelector('.cerrar').addEventListener('click', cerrar);
+  ventana.addEventListener('click', e => { if (e.target === ventana) cerrar(); });
+  d.addEventListener('keydown', e => { if (e.key === 'Escape' && !ventana.hidden) cerrar(); });
+
+  // ----- Nieve -----
+  if (!reducido) {
+    const nieve = $('.nieve');
+    for (let i = 0; i < 46; i++) {
+      const c = d.createElement('i');
+      const t = 2 + Math.random() * 4;
+      c.style.cssText = `left:${Math.random() * 100}%;--t:${t}px;--o:${.35 + Math.random() * .5};--d:${9 + Math.random() * 12}s;--r:${-Math.random() * 20}s;--x:${(Math.random() * 40 - 20).toFixed(0)}px`;
+      nieve.appendChild(c);
+    }
+  }
+
+  // ----- Caja de música: «Noche de paz» (Gruber, 1818; dominio público) -----
+  const musica = (() => {
+    const boton = $('.musica');
+    const SEMI = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+    const hz = n => { const m = /^([A-G])([#b]?)(\d)$/.exec(n); return 440 * Math.pow(2, (SEMI[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) + (+m[3] - 4) * 12) / 12); };
+    const NOTAS = [['G5', 3], ['A5', 1], ['G5', 2], ['E5', 6], ['G5', 3], ['A5', 1], ['G5', 2], ['E5', 6], ['D6', 4], ['D6', 2], ['B5', 6], ['C6', 4], ['C6', 2], ['G5', 6],
+      ['A5', 4], ['A5', 2], ['C6', 3], ['B5', 1], ['A5', 2], ['G5', 3], ['A5', 1], ['G5', 2], ['E5', 6], ['A5', 4], ['A5', 2], ['C6', 3], ['B5', 1], ['A5', 2], ['G5', 3], ['A5', 1], ['G5', 2], ['E5', 6],
+      ['D6', 4], ['D6', 2], ['F6', 3], ['D6', 1], ['B5', 2], ['C6', 6], ['E6', 6], ['C6', 3], ['G5', 1], ['E5', 2], ['G5', 3], ['F5', 1], ['D5', 2], ['C5', 12]].map(([n, t]) => [hz(n), t]);
+    const PASO = .19;
+    let ctx, salida, reloj, sig = 0, i = 0, sonando = false, aMano = false;
+    function preparar() {
+      if (ctx) return true;
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+      ctx = new AC(); salida = ctx.createGain(); salida.gain.value = 0;
+      const eco = ctx.createConvolver(), n = Math.floor(ctx.sampleRate * 2.6), b = ctx.createBuffer(2, n, ctx.sampleRate);
+      for (let c = 0; c < 2; c++) { const x = b.getChannelData(c); for (let k = 0; k < n; k++) x[k] = (Math.random() * 2 - 1) * Math.pow(1 - k / n, 3); }
+      eco.buffer = b; const mojado = ctx.createGain(); mojado.gain.value = .4; const seco = ctx.createGain(); seco.gain.value = .8;
+      salida.connect(seco).connect(ctx.destination); salida.connect(eco).connect(mojado).connect(ctx.destination);
+      return true;
+    }
+    function nota(f, t, dur) {
+      const g = ctx.createGain(), fin = t + Math.max(1.4, dur * 1.8);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.3, t + .006); g.gain.exponentialRampToValueAtTime(.0006, fin); g.connect(salida);
+      [[1, 1], [2, .26], [3, .07], [4.16, .05]].forEach(([m, a]) => { const o = ctx.createOscillator(), ga = ctx.createGain(); o.frequency.value = f * m; ga.gain.value = a; o.connect(ga).connect(g); o.start(t); o.stop(fin + .05); });
+    }
+    function programar() { while (sig < ctx.currentTime + .45) { if (i >= NOTAS.length) { i = 0; sig += PASO * 6; continue; } const [f, t] = NOTAS[i++]; nota(f, sig, t * PASO); sig += t * PASO; } }
+    function pintar() { boton.setAttribute('aria-pressed', String(sonando)); boton.setAttribute('aria-label', sonando ? 'Pausar la música' : 'Poner música'); }
+    function sonar() { if (!preparar()) return; if (ctx.state !== 'running') ctx.resume(); if (sonando) return; sonando = true; sig = Math.max(sig, ctx.currentTime + .1); programar(); reloj = setInterval(programar, 120); salida.gain.cancelScheduledValues(ctx.currentTime); salida.gain.setTargetAtTime(.4, ctx.currentTime, .5); pintar(); }
+    function parar() { if (!sonando) return; sonando = false; clearInterval(reloj); salida.gain.cancelScheduledValues(ctx.currentTime); salida.gain.setTargetAtTime(0, ctx.currentTime, .12); setTimeout(() => { if (!sonando && ctx.state === 'running') ctx.suspend(); }, 700); pintar(); }
+    boton.addEventListener('click', () => { if (sonando) { aMano = true; parar(); } else { aMano = false; sonar(); } });
+    d.addEventListener('visibilitychange', () => { if (d.hidden) parar(); });
+    pintar();
+    return { alAbrir() { if (!aMano && C.musica !== false) sonar(); } };
+  })();
+
+  // ----- Modo vídeo: gancho, abre unas puertas una tras otra y mensaje final (lo dispara el grabador) -----
+  if (params.has('video')) {
+    d.body.classList.add('modo-video');
+    const gancho = $('.gancho-video'), rotulo = $('.rotulo-video');
+    if (params.get('gancho')) { gancho.textContent = params.get('gancho'); gancho.hidden = false; }
+    window.iniciarVideo = async () => {
+      const dias = (params.get('dias') || '1,4,7,11,24').split(',').map(Number);
+      const intentar = (params.get('intentar') || '').split(',').filter(Boolean).map(Number); // puertas cerradas que se tocan antes
+      const buscar = n => [...rejilla.children].find(x => x.querySelector('.num')?.textContent === String(n));
+      gancho.classList.add('fuera');
+      await pausa(600);
+      for (const n of intentar) {
+        rotulo.textContent = `Intento abrir la ${n}…`; rotulo.hidden = false;
+        await tocar(n, buscar(n));
+        await pausa(1700);
+      }
+      for (const n of dias) {
+        const casilla = buscar(n);
+        rotulo.textContent = n === diaDeHoy ? `Hoy toca la ${n} ✨` : n === 24 ? '24 de diciembre 🎁' : `${n} de diciembre`; rotulo.hidden = false;
+        await tocar(n, casilla);
+        await pausa(2600);
+        cerrar(); await pausa(650);
+      }
+      rotulo.hidden = true;
+      if (params.get('final')) { gancho.textContent = params.get('final'); gancho.classList.add('abajo'); gancho.classList.remove('fuera'); gancho.hidden = false; }
+      await pausa(300);
+      d.body.classList.add('video-fin');
+    };
+  }
+
+  await Promise.race([d.fonts ? d.fonts.ready : null, pausa(2500)]);
+  d.body.classList.remove('cargando');
+})();
+</script>
+</body>
+</html>
